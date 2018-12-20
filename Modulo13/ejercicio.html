@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Ejercicio</title>
+    <link href="Content/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+    <br />
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Consulta Producto</h1>
+                <hr />
+                <div class="form-group">
+                    <label>Id de Producto</label>
+                    <input id="i1" type="text" class="form-control" name="i1" value="" autofocus required pattern="[0-9]*"/>
+                </div>
+                <button id="b1" class="btn btn-success" type="button">Consultar</button>
+                <br /><br />
+                <div>
+                    <b>Estado: </b><span id="estado"></span>
+                </div>
+                <div class="form-group">
+                    <h3><b>Nombre: </b><span id="ProductName"></span></h3>
+                    <h3><b>Precio: </b><span id="UnitPrice"></span></h3>
+                    <h3><b>Stock: </b><span id="UnitsInStock"></span></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.onload = function () {
+            var ws = new WebSocket('ws://localhost:54004/websockets/ejercicio.ashx');
+
+            ws.onopen = function () {
+                document.getElementById('estado').innerHTML = 'Conectado';
+                document.getElementById('estado').className = 'text-success';
+            };
+            ws.onerror = function () {
+                document.getElementById('estado').innerHTML = 'Error';
+                document.getElementById('estado').className = 'text-danger';
+            };
+            ws.onclose = function () {
+                document.getElementById('estado').innerHTML = 'Desconectado';
+                document.getElementById('estado').className = 'text-danger';
+            };
+            ws.onmessage = function (event) {
+                var datos = JSON.parse(event.data);
+                for (var i in datos) {
+                    var a = document.getElementById(i);
+                    if (a != null) {
+                        document.getElementById(i).innerHTML = datos[i];
+                    }
+                }
+            };
+            document.getElementById('b1').addEventListener('click', function () {
+                ws.send(document.getElementById('i1').value);
+            });
+            document.getElementById('i1').addEventListener('keyup', function (event) {
+                event.preventDefault();
+                if (event.keyCode == 13) {
+                    document.getElementById('b1').click();
+                }
+            });
+
+        };
+    </script>
+</body>
+</html>

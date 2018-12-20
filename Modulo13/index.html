@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Echo WebSockets</title>
+    <link href="Content/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+    <br />
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Demo WebSockets</h1>
+                <hr />
+                <br />
+                <input id="i1" type="text" value="" class="form-control" autofocus />
+                <br />
+                <button type="submit" id="b1" class="btn btn-success">Enviar</button>
+                <br /><br />
+                <h4><b>Estado: </b><span id="estado"></span></h4>
+                <hr />
+                <div id="d1"><p></p></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.onload = function () {
+            var ws = new WebSocket('ws://echo.websocket.org');
+            ws.onopen = function () {
+                document.getElementById('estado').innerHTML = 'Conectado';
+                document.getElementById('estado').className = 'text-success';
+            };
+            ws.onerror = function () {
+                document.getElementById('estado').innerHTML = 'Desconectado';
+                document.getElementById('estado').className = 'text-danger';
+            };
+            ws.onmessage = function (event) {
+                var item = document.createElement('p');
+                item.innerHTML = 'Simón dice: ' + event.data;
+                item.style.color = 'blue';
+                document.getElementById('d1').insertBefore(item, document.getElementById('d1').childNodes[0]);
+            };
+            ws.onclose = function () {
+                document.getElementById('estado').innerHTML = 'Desconectado';
+                document.getElementById('estado').className = 'text-danger';
+            };
+            document.getElementById('b1').addEventListener('click', function () {
+                var input = document.getElementById('i1');
+                var item = document.createElement('p');
+                item.innerHTML = 'Yo digo: ' + input.value;
+                item.style.color = 'black';
+                document.getElementById('d1').insertBefore(item, document.getElementById('d1').childNodes[0]);
+                ws.send(input.value);
+                input.value = '';
+                input.focus();
+            });
+
+            // Get the input field
+            var input = document.getElementById("i1");
+
+            // Execute a function when the user releases a key on the keyboard
+            input.addEventListener("keyup", function (event) {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                // Number 13 is the "Enter" key on the keyboard
+                if (event.keyCode === 13) {
+                    // Trigger the button element with a click
+                    document.getElementById("b1").click();
+                }
+            }); 
+
+
+
+        };
+    </script>
+</body>
+</html>
